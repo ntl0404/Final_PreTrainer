@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        input {
+            width: 200px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        th,
+        td {
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+        }
+
+        thead {
+            background-color: goldenrod;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width: 30%;padding-left: 20px;padding-top: 20px;">
+
+        <label for="row">Nhập vào dòng</label>
+        <input type="input" placeholder="Vui lòng nhập vào số dòng" id="row" class="form-control">
+        <br />
+        <label for="row">Nhập vào số cột</label>
+        <input type="input" placeholder="Vui lòng nhập vào số cột" id="col" class="form-control">
+        <br />
+        <button type="button" class="btn btn-outline-primary" onclick="CreateTable()">
+            Xuất Grib
+        </button>
+    </div>
+    <div id='show' style="padding-top: 20px;padding-left: 20px;text-align: center;">
+
+    </div>
+</body>
+<script>
+    let headers;
+    let table;
+    let offsettop;
+    //let matrix = [];
+    function CreateTable() {
+
+        if(document.querySelector('table')) document.querySelector('table').remove();
+        var rowInput = parseInt(document.getElementById('row').value);
+        var colInput = parseInt(document.getElementById('col').value);
+        var HienThi = document.getElementById('show');
+        table = document.createElement('table');
+        const rowHead = document.createElement('tr');
+        const thead = document.createElement('thead');
+        for (let i = 0; i < colInput; i++) {
+            const th = document.createElement('th')
+            th.textContent = i + 1
+            rowHead.appendChild(th)
+        };
+        thead.appendChild(rowHead);
+        table.appendChild(thead)
+        for (let i = 0; i < rowInput; i++) {
+            var row = document.createElement('tr');
+            row.classList.add('item')
+            var rowMatrix = [];
+            for (let j = 0; j < colInput; j++) {
+                var colum = document.createElement('td');
+                var number = Math.floor(Math.random() * 1000) + 1;
+                colum.innerHTML = number;
+                row.appendChild(colum);
+            }
+            table.appendChild(row);
+        }
+        HienThi.appendChild(table);
+        headers = document.querySelectorAll('table th');
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+
+                const tr = document.querySelectorAll('.item');
+                tr.forEach(() => {
+                    SortCol(index);
+                })
+
+            });
+        });
+        let wrap = document.querySelector("table");
+        offsettop = wrap.offsetTop;
+    };
+
+    function SortCol(col) {
+        const tr = document.querySelectorAll('.item')
+        for (let i = 0; i < tr.length - 1; i++) {
+            for (let j = 0; j < tr.length - (i + 1); j++) {
+                //swap
+                if (parseInt(tr.item(j).getElementsByTagName('td').item(col).innerHTML)
+                    > parseInt(tr.item(j + 1).getElementsByTagName('td').item(col).innerHTML)) {
+                    table.insertBefore(tr.item(j + 1), tr.item(j))
+                }
+            }
+        }
+
+
+    }
+
+    window.addEventListener("scroll", function () {
+
+        let translate = window.scrollY < 3 ? "translate(0," + (window.scrollY) + "px)" : "translate(0," + (window.scrollY - offsettop) + "px)"
+        console.log(translate)
+        document.querySelector("thead").style.transform = translate;
+    });
+</script>
+
+</html>

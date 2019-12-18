@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        input {
+            width: 200px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        td {
+            width: 100px;
+            height: 100px;
+            background-color: goldenrod;
+            font-size: 65px;
+        }
+
+        /* .dyg{
+            display: none;
+        } */
+    </style>
+</head>
+
+<body>
+    <div style="width: 30%;padding-left: 20px;padding-top: 20px;">
+        <button type="button" class="btn btn-outline-primary" onclick="SetOnly3x3()">
+            Chơi Game ở tỉ lệ 3x3
+        </button>
+        <br />
+        <label for="row">Nhập vào tỉ lệ bàn cờ , vd: 2x2 , 3x3, 4x4, 5x5</label>
+        <input type="input" placeholder="Vui lòng nhập vào số dòng" id="row" class="form-control">
+        <br />
+        <label for="row">Nhập vào bao nhiêu con để chiến thắng:</label>
+        <input type="input" placeholder="Vui lòng nhập vào số con để win" id="soluong" class="form-control">
+        <br />
+        <button type="button" class="btn btn-outline-primary" onclick="CreateTable()">
+            Xuất Bàn Cờ
+        </button>
+        <button type="button" class="btn btn-outline-danger" onclick="Reset()">
+            Reset
+        </button>
+    </div>
+    <div id='show' style="padding-top: 20px;padding-left: 20px;text-align: center;">
+
+    </div>
+</body>
+<script>
+    //createAttribute Example
+    // var att = document.createAttribute("class");        Create a "class" attribute
+    //     att.value = "democlass";                        Set the value of the class attribute
+    //     h1.setAttributeNode(att); 
+    let move = '';
+    let flag = false;
+    var matrix = [];
+    let dodai = 0;
+    let dorong = 0;
+    let step = 0;
+    let three = false;
+    let soluong = 0;
+    function CheckWin1Dong(arr, idX, idY, length) {
+        if (soluong != 0) {
+            length = soluong;
+        }
+        let X = 0;
+        let Y = 0;
+        let count = 0;
+
+        for (let i = idY; i >= 0; i--) {
+
+            if (arr[idX][i] == arr[idX][idY]) {
+                X++;
+            }
+            else break;
+        }
+        for (let j = idY + 1; j < arr[idX].length; j++) {
+
+            if (arr[idX][j] == arr[idX][idY]) {
+                Y++;
+            }
+            else break;
+        }
+        var Tong = X + Y;
+        if (Tong == length)
+            return Tong;
+    }
+
+    function CheckWin1Cot(arr, idX, idY, length) {
+        if (soluong != 0) {
+            length = soluong;
+        }
+        let X = 0;
+        let Y = 0;
+        for (let i = idX; i >= 0; i--) {
+            if (arr[i][idY] == arr[idX][idY])
+                X++;
+            else break;
+        }
+        for (let j = idX + 1; j < arr[idX].length; j++) {
+            if (arr[j][idY] == arr[idX][idY])
+                Y++;
+            else break;
+        }
+        var Tong = X + Y;
+        if (Tong == length)
+            return Tong;
+    }
+
+    //Dành riêng 3X3
+
+    // function CheckWinDuongCheoChinh(arr, idX, idY, length) {
+    //     if (soluong != 0) {
+    //         length = soluong;
+    //     }
+    //     let X = 0;
+    //     for (let i = 0; i < arr.length; i++) {
+    //         if (arr[i][i] == arr[idX][idY])
+    //             X++;
+    //     }
+    //     if (X == length)
+    //         return X;
+    // }
+
+   
+    function CheckWinDuongCheoChinh(arr, idX, idY, length) {
+        if (soluong != 0) {
+            length = soluong;
+        }
+        // console.log('==========');
+        // console.log('XY: ' + idX + ' ' + idY);
+        // console.log(arr[idX][idY]);
+        // console.log('==========');
+        let X = 0;
+        let Y = 0;
+        let j = idY;
+        for (let i = idX; i >= 0; i--) {
+            if (i < 0 || j < 0) break;
+            if (arr[i][j] == arr[idX][idY]) { X++; j--; }
+            else break;
+        }
+        j = idY + 1;
+        for (let k = idX + 1; k < arr[idX].length; k++) {
+            if ((k > arr[idX].length - 1) || (j > arr[idX].length - 1)) break;
+            if (arr[k][j] == arr[idX][idY]) { Y++; j++; }
+            else break;
+        }
+        var Tong = X + Y;
+        console.log('Tong= ' + Tong);
+        if (Tong == length)
+            return Tong;
+    }
+
+    //Dành riêng 3X3
+
+    // function CheckWinDuongCheoPhu(arr, idX, idY, length) {
+    //     if (soluong != 0) {
+    //         length = soluong;
+    //     }
+    //     let X = 0;
+    //     for (let i = 0; i < arr.length; i++) {
+    //         if (arr[i][arr.length - 1 - i] == arr[idX][idY])
+    //             X++;
+    //     }
+    //     if (X == length)
+    //         return X;
+    // }
+
+    function CheckWinDuongCheoPhu(arr, idX, idY, length) {
+        if (soluong != 0) {
+            length = soluong;
+        }
+        // console.log('==========');
+        // console.log('XY: ' + idX + ' ' + idY);
+        // console.log(arr[idX][idY]);
+        // console.log('==========');
+        let X = 0;
+        let Y = 0;
+        let j = idY;
+        for (let i = idX; i >= 0; i--) {
+            if (i < 0 || (j > arr[idX].length - 1)) break;
+            if (arr[i][j] == arr[idX][idY]) {
+                X++;
+                j++;
+            }
+            else break;
+
+        }
+        console.log('X= ' + X);
+        j = idY + 1;
+        for (let k = idX + 1; k < arr[idX].length; k++) {
+            if ((k > arr[idX].length - 1) || (j < 0)) break;
+            if (arr[k][j] == arr[idX][idY]) {
+                Y++;
+                j--;
+            }
+            else break;
+        }
+        console.log('Y= ' + Y);
+        var Tong = X + Y;
+        console.log('Tong= ' + Tong);
+        if (Tong == length)
+            return Tong;
+    }
+
+    function checkDraw() {
+        if (step == dodai * dorong) {
+            alert('draw');
+            flag = true;
+        }
+
+    }
+    function UpdateMatrix(arr, i, j, value) {
+        arr[i][j] = value;
+        return arr;
+    }
+    function setXO() {
+        if (flag == true) {
+            alert('game ket thuc roi , nhap Reset choi van moi nao');
+            return;
+        }
+        if (this.innerHTML == 'X' || this.innerHTML == '0')
+            return;
+        const X = this.querySelector('div').getAttribute('tab');
+        const nameCheck = X.split("");
+        const vitri = {
+            x: parseInt(nameCheck[0]),
+            y: parseInt(nameCheck[1])
+        };
+        //default X first , O second
+
+        if (move == '') {
+            //console.log(" vao Rong");
+            this.innerHTML = 'X';
+            move = 'X';
+            UpdateMatrix(matrix, vitri.x, vitri.y, 'X');
+            step++;
+            if (CheckWin1Dong(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWin1Cot(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWinDuongCheoChinh(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWinDuongCheoPhu(matrix, vitri.x, vitri.y, dodai) == soluong) {
+                flag = true;
+                setTimeout(function () { alert(matrix[vitri.x][vitri.y] + '  WIN'); }, 200);
+                return;
+            }
+            setTimeout(function () { checkDraw(); }, 200);
+            return;
+
+        }
+        if (move == 'X') {
+            //console.log(" vao X");
+            this.innerHTML = '0';
+            move = '0';
+            UpdateMatrix(matrix, vitri.x, vitri.y, '0');
+            step++;
+            if (CheckWin1Dong(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWin1Cot(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWinDuongCheoChinh(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWinDuongCheoPhu(matrix, vitri.x, vitri.y, dodai) == soluong) {
+                flag = true;
+                setTimeout(function () { alert(matrix[vitri.x][vitri.y] + '  WIN'); }, 200);
+                return;
+            }
+
+            setTimeout(function () { checkDraw(); }, 200);
+            return;
+        }
+        if (move == '0') {
+            //console.log(" vao Y");
+            this.innerHTML = 'X';
+            move = 'X';
+            UpdateMatrix(matrix, vitri.x, vitri.y, 'X');
+            step++;
+            if (CheckWin1Dong(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWin1Cot(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWinDuongCheoChinh(matrix, vitri.x, vitri.y, dodai) == soluong || CheckWinDuongCheoPhu(matrix, vitri.x, vitri.y, dodai) == soluong) {
+                flag = true;
+                setTimeout(function () { alert(matrix[vitri.x][vitri.y] + '  WIN'); }, 200);
+                return;
+            }
+            setTimeout(function () { checkDraw(); }, 200);
+            return;
+        }
+
+
+    };
+    function SetOnly3x3() {
+        three = true;
+        CreateTable();
+    }
+    function CreateTable() {
+       if(document.querySelector('table')) document.querySelector('table').remove();
+        if (three == true) {
+            var rowInput = 3;
+            soluong = 3;
+        }
+        else {
+            var rowInput = parseInt(document.getElementById('row').value);
+            var quality = parseInt(document.getElementById('soluong').value);
+            soluong = quality;
+        }
+        dodai = rowInput;
+        dorong = rowInput;
+        //console.log('dodai= ' + dodai);
+        var HienThi = document.getElementById('show');
+        var table = document.createElement('table');
+
+        for (let i = 0; i < rowInput; i++) {
+            var row = document.createElement('tr');
+            var rowMatrix = [];
+            for (let j = 0; j < rowInput; j++) {
+                var colum = document.createElement('td');
+                colum.innerHTML = `
+                 <div  tab=${i + '' + j}></div>`;
+                rowMatrix.push(i + '' + j);
+                row.appendChild(colum);
+            }
+            table.appendChild(row);
+            matrix.push(rowMatrix);
+            // matrix.push(tmpmatrix);
+        }
+        console.log(table);
+        console.log(matrix);
+        HienThi.appendChild(table);
+        var tdCheck = Array.from(table.querySelectorAll('td'));
+        tdCheck.forEach(item => {
+
+            item.addEventListener('click', setXO);
+        });
+
+    };
+    function Reset() {
+        var rowInput = document.getElementById('row');
+        var HienThi = document.getElementById('show');
+        var quality = document.getElementById('soluong');
+        HienThi.innerHTML = '';
+        quality.value = '';
+        rowInput.value = '';
+        matrix = [];
+        flag = false;
+        move = '';
+        dodai = 0;
+        dorong = 0;
+        step = 0;
+        three = false;
+        soluong = 0;
+    }
+
+
+
+
+</script>
+
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Snake</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            background-color: gray;
+        }
+    </style>
+</head>
+
+<body onload="startGame()">
+
+</body>
+<script>
+    var snake, food;
+    var grid = 16;
+    var myGameArea = {
+        canvas: document.createElement('canvas'),
+        start: function () {
+            this.canvas.width = 400;
+            this.canvas.height = 400;
+            this.conxet = this.canvas.getContext('2d');
+            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            this.interval = setInterval(UpdateGameArea, 50);
+            //bắt sự kiện bàn Phím  Up Down Left Right
+            window.addEventListener('keydown', function (e) {
+                myGameArea.key = e.keyCode;
+            })
+            window.addEventListener('keyup', function (e) {
+                myGameArea.key = false;
+            })
+        },
+        clear: function () {
+            this.conxet.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+
+    }
+
+    function getRandomInt(min, max) {
+
+        return Math.floor(Math.random() * (max - min)) + min;
+
+    }
+
+
+    function startGame() {
+        myGameArea.start();
+        food = new food('red', 320, 320);
+        snake = new snake('yellow', 160, 160);
+
+    }
+    function food(color, X, Y) {
+        this.X = X;
+        this.Y = Y;
+        this.update = function () {
+            ctx = myGameArea.conxet;
+            ctx.fillStyle = color;
+            ctx.fillRect(this.X, this.Y, grid - 1, grid - 1);
+        }
+    };
+    function SnakeEatFood(snake, cell, food) {
+        // snake eat food
+        if (cell.X === food.X && cell.Y === food.Y) {
+            snake.dodai++;
+            food.X = getRandomInt(0, 25) * grid;
+            food.Y = getRandomInt(0, 25) * grid;
+        }
+        return snake;
+    }
+    function snake(color, X, Y) {
+        this.X = X;
+        this.Y = Y;
+        this.speedX = grid;
+        this.speedY = 0;
+        this.cells = [],
+        this.dodai = 1;
+        this.update = function () {
+            ctx = myGameArea.conxet;
+            ctx.fillStyle = color;
+            //snake move
+            this.cells.unshift({ X: this.X, Y: this.Y });
+            //console.log(this.cells);
+            if (this.cells.length > this.dodai) {
+                this.cells.pop();
+            }
+            //draw snake
+            this.cells.forEach((cell, index) => {
+                ctx.fillRect(cell.X, cell.Y, grid - 1, grid - 1);
+                SnakeEatFood(this, cell, food);
+                for (var i = index + 1; i < snake.cells.length; i++) {
+                    // va chạm thì reset game
+                    if (cell.X === this.cells[i].X && cell.Y === this.cells[i].Y) {
+                        this.X = 160;
+                        this.Y = 160;
+                        this.cells = [];
+                        this.dodai = 1;
+                        this.speedX = grid;
+                        this.speedY = 0;
+                        food.X = getRandomInt(0, 25) * grid;
+                        food.Y = getRandomInt(0, 25) * grid;
+                    }
+
+                }
+            });
+        };
+        this.newPos = function () {
+            this.X += this.speedX;
+            this.Y += this.speedY;
+        }
+    };
+
+    function UpdateGameArea() {
+        myGameArea.clear();
+        console.log(snake);
+        //snake đi xuyên tường đối diện
+        if (snake.X < 0) {
+
+            snake.X = myGameArea.canvas.width - grid;
+
+        }
+
+        else if (snake.X >= myGameArea.canvas.width) {
+
+            snake.X = 0;
+
+        }
+        if (snake.Y < 0) {
+
+            snake.Y = myGameArea.canvas.height - grid;
+
+        }
+
+        else if (snake.Y >= myGameArea.canvas.height) {
+
+            snake.Y = 0;
+
+        }
+
+        //KeyBoard: Up Down Left Right và lọc sự kiện không cho Rắn đi ngược chiều
+        if (snake.speedX === 0 && myGameArea.key == 37) {
+            snake.speedX = -grid;
+            snake.speedY = 0;
+        }
+        if (snake.speedY === 0 && myGameArea.key == 38) {
+            snake.speedY = -grid;
+            snake.speedX = 0;
+        }
+        if (snake.speedX === 0 && myGameArea.key == 39) {
+            snake.speedX = grid;
+            snake.speedY = 0;
+        }
+        if (snake.speedY === 0 && myGameArea.key == 40) {
+            snake.speedY = grid;
+            snake.speedX = 0;
+        }
+        food.update();
+        snake.newPos();
+        snake.update();
+    }
+</script>
+
+<!-- <button onmousedown="moveup()" onmouseup="stopMove()" ontouchstart="moveup()">UP</button>
+<button onmousedown="movedown()" onmouseup="stopMove()" ontouchstart="movedown()">DOWN</button>
+<button onmousedown="moveleft()" onmouseup="stopMove()" ontouchstart="moveleft()">LEFT</button>
+<button onmousedown="moveright()" onmouseup="stopMove()" ontouchstart="moveright()">RIGHT</button> -->
+
+</html>
